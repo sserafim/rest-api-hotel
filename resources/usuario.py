@@ -11,7 +11,7 @@ class User(Resource):
         return {'message': 'Uusuário not found'}, 404
 
     def delete(self, user_id):
-        user = delete.find_user(user_id)
+        user = UserModel.find_user(user_id)
         if user:
             try:
                 user.delete_user()
@@ -20,20 +20,22 @@ class User(Resource):
             return {'message': 'Usuário deleted'}
         return {'message': 'Usuário not found.'}, 404
 
+
 class UserRegister(Resource):
     # /cadastro
-    def  post(self):
+    def post(self):
         attr = reqparse.RequestParser()
-        attr.add_argument('login', type=str, required=True, help='The field login cannot be left blank')
-        attr.add_argument('senha', type=str , required=True, help="The senha cannot be left blank")
+        attr.add_argument('login', type=str, required=True,
+                          help='The field login cannot be left blank')
+        attr.add_argument('senha', type=str, required=True,
+                          help="The senha cannot be left blank")
 
         dados = attr.parse_args()
+        print(dados['login'])
 
         if UserModel.find_by_login(dados['login']):
             return {"message": "The login '{}' already exists".format(dados['login'])}
 
         user = UserModel(**dados)
         user.save_user()
-        return{'message': 'User cread successfully'},201
-
-        
+        return{'message': 'User created successfully'}, 201
