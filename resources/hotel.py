@@ -51,7 +51,7 @@ class Hoteis(Resource):
 
         if not parametros.get('cidade'):
             consulta = "SELECT * FROM hoteis \
-            WHERE (estrelas > ? and estrelas < ?) \
+            WHERE (estrelas >= ? and estrelas <= ?) \
             AND (diaria > ? and diaria < ?) \
             LIMIT ? OFFSET ?"
             tupla = tuple([parametros[chave] for chave in parametros])
@@ -62,9 +62,9 @@ class Hoteis(Resource):
             AND (diaria > ? and diaria < ?) \
             AND cidade = ? LIMIT ? OFFSET ?"
             tupla = tuple([parametros[chave] for chave in parametros])
-            resultado = cursor.execute(consulta, tupla)            
+            resultado = cursor.execute(consulta, tupla)
 
-        hoteis= []
+        hoteis = []
         for linha in resultado:
             hoteis.append({
                 'hotel_id': linha[0],
@@ -72,10 +72,10 @@ class Hoteis(Resource):
                 'estrelas': linha[2],
                 'diaria': linha[3],
                 'cidade': linha[4]
-            }) 
-            
-        return {'hoteis': hoteis}               
-        #return {'hoteis': [hotel.json() for hotel in HotelModel.query.all()]} old código
+            })
+
+        return {'hoteis': hoteis}
+        # return {'hoteis': [hotel.json() for hotel in HotelModel.query.all()]} old código
 
 
 class Hotel(Resource):
