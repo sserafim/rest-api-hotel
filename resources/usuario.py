@@ -11,6 +11,7 @@ attr.add_argument('login', type=str, required=True,
                   help='The field login cannot be left blank')
 attr.add_argument('senha', type=str, required=True,
                   help="The senha cannot be left blank")
+attr.add_argument('ativado', type=bool)
 
 
 class User(Resource):
@@ -44,6 +45,7 @@ class UserRegister(Resource):
             return {"message": "The login '{}' already exists".format(dados['login'])}
 
         user = UserModel(**dados)
+        user.ativado = False
         user.save_user()
         return{'message': 'User created successfully'}, 201
 
@@ -56,8 +58,10 @@ class UserLogin(Resource):
 
         user = UserModel.find_by_login(dados['login'])
         if user and safe_str_cmp(user.senha, dados['senha']):
-            token_de_acesso = create_access_token(identity=user.user_id)
-            return {'access_token': token_de_acesso}, 200
+            if user.ativado:
+                token_de_acesso = create_access_token(identity=user.user_id)
+                return {'access_token': token_de_acesso}, 200
+            return{'message': 'User not confirmed.'}, 400
         return {'message': 'The username or password is incorrect'}, 401
 
 
@@ -67,3 +71,16 @@ class UserLogout(Resource):
         jwt_id = get_raw_jwt()['jti']  # Token identifier
         BLACKLIST.add(jwt_id)
         return {'message': 'Logged out successfully!!!'}, 200
+
+
+class UserConfirm(Resource):
+    # Raiz_do_site/confirmacao/{user_id}
+    @classmethod
+    def get(cls, user_id):
+        user = UserModel.find_user(user_id)
+
+        if not user:
+            return{"message": "User id '{}' not found".format(user_id)}, 404
+        user.ativado = True
+        user.save_user()
+        return{"message": "User id'{}' confirmed successfully.".format(user_id)}, 200
