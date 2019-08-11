@@ -6,7 +6,7 @@ class SiteModel(banco.Model):
 
     __tablename__ = 'sites'
 
-    site_id = banco.Column(banco.integer, primary_key=True)
+    site_id = banco.Column(banco.Integer, primary_key=True)
     url = banco.Column(banco.String(80))
     hoteis = banco.relationship('HotelModel')
 
