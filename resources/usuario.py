@@ -43,7 +43,7 @@ class UserRegister(Resource):
         dados = attr.parse_args()
         if not dados.get('email') or dados.get('email') is None:
             return{"message": "The field 'email' cannot be left blank."}, 404
-        print('chegou aqui')
+
         if UserModel.find_by_email(dados['email']):
             return {"message": "The email '{}' already exists".format(dados['email'])}, 400
 
