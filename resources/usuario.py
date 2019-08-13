@@ -3,6 +3,7 @@ from models.usuario import UserModel
 from werkzeug.security import safe_str_cmp
 from flask_jwt_extended import create_access_token, jwt_required, get_raw_jwt
 from blacklist import BLACKLIST
+import traceback
 
 
 #global variables
@@ -11,6 +12,7 @@ attr.add_argument('login', type=str, required=True,
                   help='The field login cannot be left blank')
 attr.add_argument('senha', type=str, required=True,
                   help="The senha cannot be left blank")
+attr.add_argument('email', type=str)
 attr.add_argument('ativado', type=bool)
 
 
@@ -39,15 +41,25 @@ class UserRegister(Resource):
     def post(self):
 
         dados = attr.parse_args()
-        print(dados['login'])
+        if not dados.get('email') or dados.get('email') is None:
+            return{"message", "The field 'email' cannot be left blank."}, 404
+
+        if UserModel.find_by_email(dados['email']):
+            return {"message": "The email '{}' already exists".format(dados['email'])}, 400
 
         if UserModel.find_by_login(dados['login']):
-            return {"message": "The login '{}' already exists".format(dados['login'])}
+            return {"message": "The login '{}' already exists".format(dados['login'])}, 400
 
         user = UserModel(**dados)
         user.ativado = False
-        user.save_user()
-        return{'message': 'User created successfully'}, 201
+        try:
+            user.save_user()
+            user.send_confirmation_email()
+        except:
+            user.delete_user()
+            traceback.prin_exc()
+            return {'messagte', 'An internal server error has ocurred.'}, 500
+        return{'message': 'User created successfully!!!!!!!!!'}, 201
 
 
 class UserLogin(Resource):

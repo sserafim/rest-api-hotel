@@ -3,7 +3,12 @@ from flask import request, url_for
 from requests import post
 
 
-# Cria um objeto model da clase HotelModel
+MAILGUN_DOMAIN = 'sandboxacbb5e2e739c411d856decfaa582b38c.mailgun.org'
+MAILGUN_API_KEY = 'key-c3b8ddd555ee8a06ad853832f117f09b'
+FROM_TITLE = 'NO-REPLY'
+FROM_EMAIL = 'no_reply@restapisdos.com'
+
+
 class UserModel(banco.Model):
 
     __tablename__ = 'usuarios'
@@ -24,9 +29,9 @@ class UserModel(banco.Model):
         # Monta link para enviar no e-mail confirmar.
         link = request.url_root[:-1] + \
             url_for('userconfirm', user_id=self.user_id)
-        return post('https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DMAIN),
+        return post('https://api.mailgun.net/v3/{}/messages'.format(MAILGUN_DOMAIN),
                     auth=('api', MAILGUN_API_KEY),
-                    data={'from': '{} <{}>'.format(FROM_TILE, FROM_EMAIL),
+                    data={'from': '{} <{}>'.format(FROM_TITLE, FROM_EMAIL),
                           'to': self.email,
                           'subject': 'Confirmação de Cadastro',
                           'text': 'Confirme seu cadastro clicando no link a seguir: {}'.format(link),
@@ -55,6 +60,13 @@ class UserModel(banco.Model):
     @classmethod
     def find_by_login(cls, login):
         user = cls.query.filter_by(login=login).first()
+        if user:
+            return user
+        return None
+
+    @classmethod
+    def find_by_email(cls, email):
+        user = cls.query.filter_by(email=email).first()
         if user:
             return user
         return None
