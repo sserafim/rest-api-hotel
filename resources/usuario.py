@@ -41,9 +41,12 @@ class UserRegister(Resource):
     def post(self):
 
         dados = attr.parse_args()
+        print(dados)
         if not dados.get('email') or dados.get('email') is None:
+            print(
+                'chegou aqui................................................................................')
             return{"message", "The field 'email' cannot be left blank."}, 404
-
+        print('chegou aqui')
         if UserModel.find_by_email(dados['email']):
             return {"message": "The email '{}' already exists".format(dados['email'])}, 400
 
@@ -58,7 +61,7 @@ class UserRegister(Resource):
         except:
             user.delete_user()
             traceback.prin_exc()
-            return {'messagte', 'An internal server error has ocurred.'}, 500
+            return {'message', 'An internal server error has ocurred.'}, 500
         return{'message': 'User created successfully!!!!!!!!!'}, 201
 
 
