@@ -45,6 +45,5 @@ api.add_resource(UserConfirm, '/confirmacao/<int:user_id>')
 if __name__ == '__main__':
     from sql_alchemy import banco
     banco.init_app(app)
-    #port = int(os.environ.get("PORT", 5000))
-    #app.run(host='0.0.0.0', port=port)
-    app.run()
+    port = int(os.environ.get("PORT", 5000))
+    app.run(host='0.0.0.0', port=port)
