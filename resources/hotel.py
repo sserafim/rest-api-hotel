@@ -25,7 +25,7 @@ class Hoteis(Resource):
         dados_validos = {chave: dados[chave]
                          for chave in dados if dados[chave] is not None}
         parametros = normalize_path_param(**dados_validos)
-
+        print('passou aqui >>> ', parametros)
         if not parametros.get('cidade'):
             tupla = tuple([parametros[chave] for chave in parametros])
             resultado = cursor.execute(consulta_sem_cidade, tupla)

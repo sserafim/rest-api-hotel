@@ -1,3 +1,4 @@
+import os
 from flask import Flask, jsonify
 from flask_restful import Resource, Api
 from resources.hotel import Hoteis, Hotel
@@ -44,4 +45,5 @@ api.add_resource(UserConfirm, '/confirmacao/<int:user_id>')
 if __name__ == '__main__':
     from sql_alchemy import banco
     banco.init_app(app)
-    app.run(debug=True)
+    port = int(os.environ.get("PORT",5000))
+    app.run(host='0.0.0.0', port=port)
